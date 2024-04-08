@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+// Wrapper functions to abstract low level details of calls to BLS precompiles
+// defined in EIP-2537, see <https://eips.ethereum.org/EIPS/eip-2537>.
 library BLS {
     // Precompile addresses come from the BLS addresses submodule in AlphaNet, see:
     // <https://github.com/paradigmxyz/alphanet/blob/main/crates/precompile/src/addresses.rs>
