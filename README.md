@@ -1,66 +1,35 @@
-## Foundry
+## forge-alphanet
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Set of solidity utilities to ease deployment and usage of applications on
+[AlphaNet].
 
-Foundry consists of:
+### BLS library
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Functions to allow calling each of the BLS precompiles defined in [EIP-2537]
+without the low level details.
 
-## Documentation
+For example, this is how the library can be used from a solidity smart contract:
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.25;
 
-https://book.getfoundry.sh/
+import "/path/to/forge-alphanet/src/libraries/BLS.sol";
 
-## Usage
+contract BLSExample {
+    event OperationResult(bool success, bytes result);
 
-### Build
+    // Function to perform a BLS12-381 G1 addition with error handling
+    function performG1Add(bytes memory input) public {
+        (bool success, bytes memory output) = BLS.G1Add(input);
 
-```shell
-$ forge build
+        if (!success) {
+            emit OperationResult(false, "");
+        } else {
+            emit OperationResult(true, output);
+        }
+    }
+}
 ```
 
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+[AlphaNet]: https://github.com/paradigmxyz/alphanet
+[EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
