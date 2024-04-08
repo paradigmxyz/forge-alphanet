@@ -13,7 +13,7 @@ For example, this is how the library can be used from a solidity smart contract:
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "/path/to/forge-alphanet/src/libraries/BLS.sol";
+import "/path/to/forge-alphanet/src/sign/BLS.sol";
 
 contract BLSExample {
     event OperationResult(bool success, bytes result);
