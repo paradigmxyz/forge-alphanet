@@ -14,14 +14,14 @@ library BLS {
     uint256 constant G1ADD_OUTPUT_SIZE = 128;
     /// @notice G1MUL output size allocation
     uint256 constant G1MUL_OUTPUT_SIZE = 128;
-    /// @notice G1MULTIEXP output size allocation
-    uint256 constant G1MULTIEXP_OUTPUT_SIZE = 128;
+    /// @notice G1MSM output size allocation
+    uint256 constant G1MSM_OUTPUT_SIZE = 128;
     /// @notice G2ADD output size allocation
     uint256 constant G2ADD_OUTPUT_SIZE = 256;
     /// @notice G2MUL output size allocation
     uint256 constant G2MUL_OUTPUT_SIZE = 256;
-    /// @notice G2MULTIEXP output size allocation
-    uint256 constant G2MULTIEXP_OUTPUT_SIZE = 256;
+    /// @notice G2MSM output size allocation
+    uint256 constant G2MSM_OUTPUT_SIZE = 256;
     /// @notice PAIRING output size allocation
     uint256 constant PAIRING_OUTPUT_SIZE = 32;
     /// @notice MAP_FP_TO_G1 output size allocation
@@ -53,15 +53,15 @@ library BLS {
         }
     }
 
-    /// @notice G1MULTIEXP operation
+    /// @notice G1MSM operation
     /// @param input Slice of bytes representing the input for the precompile operation
     /// @return success Represents if the operation was successful
     /// @return output Result bytes of the operation
-    function G1MultiExp(bytes memory input) internal view returns (bool success, bytes memory output) {
-        output = new bytes(G1MULTIEXP_OUTPUT_SIZE);
+    function G1MSM(bytes memory input) internal view returns (bool success, bytes memory output) {
+        output = new bytes(G1MSM_OUTPUT_SIZE);
         assembly {
-            // G1MULTIEXP address is 0x0d
-            success := staticcall(gas(), 0x0d, add(input, 0x20), mload(input), output, G1MULTIEXP_OUTPUT_SIZE)
+            // G1MSM address is 0x0d
+            success := staticcall(gas(), 0x0d, add(input, 0x20), mload(input), output, G1MSM_OUTPUT_SIZE)
         }
     }
 
@@ -89,15 +89,15 @@ library BLS {
         }
     }
 
-    /// @notice G2MULTIEXP operation
+    /// @notice G2MSM operation
     /// @param input Slice of bytes representing the input for the precompile operation
     /// @return success Represents if the operation was successful
     /// @return output Result bytes of the operation
-    function G2MultiExp(bytes memory input) internal view returns (bool success, bytes memory output) {
-        output = new bytes(G2MULTIEXP_OUTPUT_SIZE);
+    function G2MSM(bytes memory input) internal view returns (bool success, bytes memory output) {
+        output = new bytes(G2MSM_OUTPUT_SIZE);
         assembly {
-            // G2MULTIEXP address is 0x10
-            success := staticcall(gas(), 0x10, add(input, 0x20), mload(input), output, G2MULTIEXP_OUTPUT_SIZE)
+            // G2MSM address is 0x10
+            success := staticcall(gas(), 0x10, add(input, 0x20), mload(input), output, G2MSM_OUTPUT_SIZE)
         }
     }
 
