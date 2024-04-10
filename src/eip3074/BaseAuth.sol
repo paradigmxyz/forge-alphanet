@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.23;
 
 /// @title BaseAuth
 /// @author Anna Carroll <https://github.com/anna-carroll/3074>
@@ -23,6 +23,7 @@ abstract contract BaseAuth {
 
     function authSimple(address authority, bytes32 commit, uint8 v, bytes32 r, bytes32 s)
         internal
+        pure
         returns (bool success)
     {
         bytes memory authArgs = abi.encodePacked(yParity(v), r, s, commit);
@@ -33,6 +34,7 @@ abstract contract BaseAuth {
 
     function authCallSimple(address to, bytes memory data, uint256 value, uint256 gasLimit)
         internal
+        pure
         returns (bool success)
     {
         assembly {

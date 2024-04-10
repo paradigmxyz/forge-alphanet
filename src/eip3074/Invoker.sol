@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.23;
 
 import { BaseAuth } from "./BaseAuth.sol";
 
@@ -51,7 +51,7 @@ contract Invoker is BaseAuth {
     // @dev Currently this function does not return the call data.
     // @param payload - The payload to send.
     // @return success - Whether the call succeeded.
-    function call(Payload calldata payload) private returns (bool success) {
+    function call(Payload calldata payload) private pure returns (bool success) {
         uint256 gasLimit = payload.gasLimit;
         address to = payload.to;
         uint256 value = payload.value;

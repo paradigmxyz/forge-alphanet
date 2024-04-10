@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.23;
 
 //( @title Secp256r1
 /// @notice Wrapper function to abstract low level details of call to the Secp256r1
