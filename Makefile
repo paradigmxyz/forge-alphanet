@@ -14,4 +14,4 @@ test:
 		-u $$(id -u):$$(id -g) \
 		ghcr.io/fgimenez/eip3074-tools:latest \
 		--foundry-directory /app/foundry \
-		--foundry-command test
+		--foundry-command "test -vvv"
