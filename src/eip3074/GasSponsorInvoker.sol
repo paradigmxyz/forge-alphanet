@@ -31,10 +31,8 @@ contract GasSponsorInvoker is BaseAuth {
         uint256 value,
         uint256 gasLimit
     ) external returns (bool success) {
-        bytes32 digest = getDigest(commit);
-
         // Ensure the transaction is authorized by the signer
-        require(authSimple(authority, digest, v, r, s), "Authorization failed");
+        require(authSimple(authority, commit, v, r, s), "Authorization failed");
 
         // Execute the call as authorized by the signer
         success = authCallSimple(to, data, value, gasLimit);

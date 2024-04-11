@@ -39,7 +39,7 @@ contract GasSponsorInvokerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(authority.privateKey, digest);
 
         vm.expectEmit(true, true, false, true);
-        emit Message(address(mockContract), message);
+        emit Message(address(authority.addr), message);
 
         bool success = invoker.sponsorCall(authority.addr, commit, v, r, s, address(mockContract), data, 0, gasleft());
         assertTrue(success, "Call should be successful");
