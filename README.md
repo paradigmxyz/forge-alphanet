@@ -77,33 +77,69 @@ Take note of GasSponsorInvoker address.
 #### How to use
 
 1. Define target contract
-Imagine a simple contract Greeter that stores a greeting message:
+Imagine a simple contract Greeter that stores `msg.sender` in a variable:
 ```solidity
 contract Greeter {
-    string public greeting;
+    address public greeter;
 
-    function setGreeting(string memory _greeting) public {
-        greeting = _greeting;
+    function setGreeter() public {
+        greeter = msg.sender;
     }
 }
 ```
 2. Authorizing a transaction
 To authorize a transaction, the authorizer signs a digest of the transaction
 details. This process is streamlined by our invoker interface:
-
+* Create the authorizer account and note its private key and address:
+```shell
+$ cast wallet new
+```
 * Deploy `Greeter` and note its address.
+* Create a commit:
+```shell
+$ cast keccak "Some unique commit data"
+```
 * Generate the digest:
 ```shell
 $ cast call <GasSponsorInvoker-address> "getDigest(bytes32)" <commit> --rpc-url <alphanet-rpc-url>
 ```
 * Sign the digest
 ```shell
-$ cast sign <digest> --private-key <private-key>
+$ cast sign <digest> --private-key <authorizer-private-key>
 ```
 This gives the `v`, `r` and `s` values of the signature.
 
-3. Interacting with `GasSponsorInvoker` from a smart contract: TODO
+3. Interacting with `GasSponsorInvoker`
 
+Now you can send a transaction to be executed as if by the authorizer account
+with the gas paid by a different account:
+* Get the `setGreeter` method calldata:
+```shell
+$ cast calldata "setGreeter()"
+```
+
+* Send the transaction to `GasSponsorInvoker` from an gas sponsor account (
+different from the authorizer and with funds in AlphaNet):
+```shelll
+$ cast send <GasSponsorInvoker-address> \
+    "sponsorCall(address,bytes32,uint8,bytes32,bytes32,address,bytes,uint256,uint256)" \
+    <authorizer-address> \
+    <commit> \
+    <signature-v> \
+    <signature-r> \
+    <signature-v> \
+    <Greeter-address> \
+    <Greeter-calldata> \
+    0 \
+    0 \
+    --rpc-url <alphanet-rpc-url> \
+    --private-key <sponsor-private-key>
+```
+* Now you can check that the Greeter smart contract register as `msg.sender` the
+authorizer account:
+```shell
+$ cast call <Greeter-address> "greeter()" --rpc-url <alphanet-rpc-url>
+```
 
 [AlphaNet]: https://github.com/paradigmxyz/alphanet
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
