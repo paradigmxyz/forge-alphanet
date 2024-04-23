@@ -55,9 +55,13 @@ contract Secp256r1Example {
 
 ## EIP-3074 invokers
 
+**NOTE** These invokers temporarily only work with the docker image from
+[eip3074-tools] which contains patched versions of solc and forge compatible with
+[EIP-3074] instructions.
+
 ### Gas Sponsor Invoker
 
-The GasSponsorInvoker is a smart contract designed to utilize EIP-3074 auth and
+The GasSponsorInvoker is a smart contract designed to utilize [EIP-3074] auth and
 authcall operations, allowing transactions to be sponsored in terms of gas fees.
 This contract enables an external account (EOA) to authorize the invoker to
 execute specific actions on its behalf without requiring the EOA to provide gas
@@ -144,3 +148,5 @@ $ cast call <Greeter-address> "greeter()" --rpc-url <alphanet-rpc-url>
 [AlphaNet]: https://github.com/paradigmxyz/alphanet
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
 [EIP-7212]: https://eips.ethereum.org/EIPS/eip-7212
+[EIP-3074]: https://eips.ethereum.org/EIPS/eip-3074
+[eip3074-tools]: https://github.com/fgimenez/eip-3074-tools
