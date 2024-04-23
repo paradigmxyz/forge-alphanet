@@ -56,8 +56,8 @@ contract Secp256r1Example {
 ## EIP-3074 invokers
 
 **NOTE** These invokers temporarily only work with the docker image from
-[eip3074-tools] which contains patched versions of solc and forge compatible with
-[EIP-3074] instructions.
+[foundry-alphanet] which contains patched versions of solc and forge compatible with
+[EIP-3074] instructions. You can pull Foundry Alphanet using `docker pull ghcr.io/paradigmxyz/foundry-alphanet:latest`, see the [README](https://github.com/paradigmxyz/foundry-alphanet/blob/main/README.md) on how to operate it.
 
 ### Gas Sponsor Invoker
 
@@ -144,4 +144,4 @@ $ cast call <Greeter-address> "greeter()" --rpc-url <alphanet-rpc-url>
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
 [EIP-7212]: https://eips.ethereum.org/EIPS/eip-7212
 [EIP-3074]: https://eips.ethereum.org/EIPS/eip-3074
-[eip3074-tools]: https://github.com/fgimenez/eip-3074-tools
+[foundry-alphanet]: https://github.com/paradigmxyz/foundry-alphanet
