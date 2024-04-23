@@ -30,9 +30,10 @@ contract GasSponsorInvokerTest is Test {
     event Message(address sender, string message);
 
     function testSponsorCall() public {
-        bytes32 commit = keccak256("Some unique commit data");
         string memory message = "Hello, World!";
         bytes memory data = abi.encodeWithSelector(MockContract.sendMessage.selector, message);
+
+        bytes32 commit = keccak256(abi.encode(address(mockContract), data));
 
         bytes32 digest = invoker.getDigest(commit);
 
@@ -41,7 +42,7 @@ contract GasSponsorInvokerTest is Test {
         vm.expectEmit(true, true, false, true);
         emit Message(address(authority.addr), message);
 
-        bool success = invoker.sponsorCall(authority.addr, commit, v, r, s, address(mockContract), data, 0, gasleft());
+        bool success = invoker.sponsorCall(authority.addr, v, r, s, address(mockContract), data, 0, gasleft());
         assertTrue(success, "Call should be successful");
     }
 }
