@@ -11,7 +11,6 @@ contract GasSponsorInvoker is BaseAuth {
 
     /// @notice Executes a call authorized by an external account (EOA)
     /// @param authority The address of the authorizing external account
-    /// @param commit A 32-byte value committing to transaction validity conditions
     /// @param v The recovery byte of the signature
     /// @param r Half of the ECDSA signature pair
     /// @param s Half of the ECDSA signature pair
@@ -22,7 +21,6 @@ contract GasSponsorInvoker is BaseAuth {
     /// @return success True if the call was successful
     function sponsorCall(
         address authority,
-        bytes32 commit,
         uint8 v,
         bytes32 r,
         bytes32 s,
@@ -31,6 +29,8 @@ contract GasSponsorInvoker is BaseAuth {
         uint256 value,
         uint256 gasLimit
     ) external returns (bool success) {
+        bytes32 commit = keccak256(abi.encode(to, data));
+
         // Ensure the transaction is authorized by the signer
         require(authSimple(authority, commit, v, r, s), "Authorization failed");
 

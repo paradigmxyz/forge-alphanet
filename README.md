@@ -99,13 +99,21 @@ details. This process is streamlined by our invoker interface:
 $ cast wallet new
 ```
 * Deploy `Greeter` and note its address.
-* Create a commit:
+* Get the `setGreeter` method calldata:
 ```shell
-$ cast keccak "Some unique commit data"
+$ cast calldata "setGreeter()"
+```
+* Create the commit content:
+```shell
+$ cast abi-encode "f(address,bytes)" <Greeter-address> <setGreeter-calldata>
+```
+* Create the commit hash:
+```shell
+$ cast keccak <commit-content>
 ```
 * Generate the digest:
 ```shell
-$ cast call <GasSponsorInvoker-address> "getDigest(bytes32)" <commit> --rpc-url <alphanet-rpc-url>
+$ cast call <GasSponsorInvoker-address> "getDigest(bytes32)" <commit-hash> --rpc-url <alphanet-rpc-url>
 ```
 * Sign the digest
 ```shell
@@ -117,10 +125,6 @@ This gives the `v`, `r` and `s` values of the signature.
 
 Now you can send a transaction to be executed as if by the authorizer account
 with the gas paid by a different account:
-* Get the `setGreeter` method calldata:
-```shell
-$ cast calldata "setGreeter()"
-```
 
 * Send the transaction to `GasSponsorInvoker` from an gas sponsor account (
 different from the authorizer and with funds in AlphaNet):
@@ -128,7 +132,6 @@ different from the authorizer and with funds in AlphaNet):
 $ cast send <GasSponsorInvoker-address> \
     "sponsorCall(address,bytes32,uint8,bytes32,bytes32,address,bytes,uint256,uint256)" \
     <authorizer-address> \
-    <commit> \
     <signature-v> \
     <signature-r> \
     <signature-v> \
