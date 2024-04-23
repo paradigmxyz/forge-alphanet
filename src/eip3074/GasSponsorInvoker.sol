@@ -29,7 +29,7 @@ contract GasSponsorInvoker is BaseAuth {
         uint256 value,
         uint256 gasLimit
     ) external returns (bool success) {
-        bytes32 commit = keccak256(abi.encode(to, data));
+        bytes32 commit = getCommit(to, data);
 
         // Ensure the transaction is authorized by the signer
         require(authSimple(authority, commit, v, r, s), "Authorization failed");

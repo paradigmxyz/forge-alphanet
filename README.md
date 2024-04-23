@@ -103,17 +103,9 @@ $ cast wallet new
 ```shell
 $ cast calldata "setGreeter()"
 ```
-* Create the commit content:
-```shell
-$ cast abi-encode "f(address,bytes)" <Greeter-address> <setGreeter-calldata>
-```
-* Create the commit hash:
-```shell
-$ cast keccak <commit-content>
-```
 * Generate the digest:
 ```shell
-$ cast call <GasSponsorInvoker-address> "getDigest(bytes32)" <commit-hash> --rpc-url <alphanet-rpc-url>
+$ cast call <GasSponsorInvoker-address> "getDigest(address,bytes)" <Greeter-address> <setGreeter-calldata> --rpc-url <alphanet-rpc-url>
 ```
 * Sign the digest
 ```shell

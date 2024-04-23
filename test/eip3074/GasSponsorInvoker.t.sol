@@ -33,9 +33,7 @@ contract GasSponsorInvokerTest is Test {
         string memory message = "Hello, World!";
         bytes memory data = abi.encodeWithSelector(MockContract.sendMessage.selector, message);
 
-        bytes32 commit = keccak256(abi.encode(address(mockContract), data));
-
-        bytes32 digest = invoker.getDigest(commit);
+        bytes32 digest = invoker.getDigest(address(mockContract), data);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(authority.privateKey, digest);
 
