@@ -68,11 +68,15 @@ execute specific actions on its behalf without requiring the EOA to provide gas
 for these transactions.
 
 #### Deployment
-1. Compile the Contract: you can use the following command:
+1. Setup the environment:
+```shell
+$ make setup
+```
+2. Compile the Contract: you can use the following command:
 ```shell
 $ make build
 ```
-2. Deploy the contract to AlphaNet:
+3. Deploy the contract to AlphaNet:
 ```shell
 $ forge create GasSponsorInvoker --private-key <your-private-key> --rpc-url <alphanet-rpc-url>
 ```
