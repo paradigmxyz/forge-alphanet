@@ -1,5 +1,9 @@
+.PHONY: setup
+setup:
+	git submodule update --init --recursive
+
 .PHONY: build
-build:
+build: setup
 	docker run --rm \
 		-v $$(pwd):/app/foundry \
 		-u $$(id -u):$$(id -g) \
@@ -8,7 +12,7 @@ build:
 		--foundry-command build
 
 .PHONY: test
-test:
+test: setup
 	docker run --rm \
 		-v $$(pwd):/app/foundry \
 		-u $$(id -u):$$(id -g) \
