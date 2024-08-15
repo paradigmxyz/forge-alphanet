@@ -8,3 +8,4 @@ via_ir = true
 evm_version = "prague"
 eof_version = 1
 solc = "./eof-solc"
+alphanet = true
