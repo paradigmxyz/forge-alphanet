@@ -3,6 +3,19 @@
 Set of solidity utilities to ease deployment and usage of applications on
 [AlphaNet].
 
+## EOF support
+
+This repository is configured to compile contracts for [EOF]. This is done by using solc binary from [forge-eof] repository distrbuted as a docker image. To be able to compile contracts you will need to have [Docker] installed.
+
+To make sure that everything is working properly you can run the following command:
+```shell
+$ ./eof-solc --version
+```
+
+It will pull the docker image on a first run and should print the version of the solc binary.
+
+After that, make sure that your forge version is up to data (run `foundryup` if needed), and then you should be able to use all usual forge commands —— all contracts will get compiled for EOF.
+
 ## BLS library
 
 Functions to allow calling each of the BLS precompiles defined in [EIP-2537]
@@ -145,6 +158,9 @@ $ cast call <Greeter-address> "greeter()" --rpc-url <alphanet-rpc-url>
 ```
 
 [AlphaNet]: https://github.com/paradigmxyz/alphanet
+[EOF]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-3540.md
+[forge-eof]: https://github.com/paradigmxyz/forge-eof
+[Docker]: https://docs.docker.com/
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
 [EIP-7212]: https://eips.ethereum.org/EIPS/eip-7212
 [EIP-3074]: https://eips.ethereum.org/EIPS/eip-3074
