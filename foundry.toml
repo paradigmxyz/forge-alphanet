@@ -2,6 +2,10 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-prague = true
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+# settings required for EOF
+via_ir = true
+evm_version = "prague"
+eof_version = 1
+solc = "./eof-solc"
+alphanet = true

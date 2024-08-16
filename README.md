@@ -3,6 +3,19 @@
 Set of solidity utilities to ease deployment and usage of applications on
 [AlphaNet].
 
+## EOF support
+
+This repository is configured to compile contracts for [EOF]. This is done by using solc binary from [forge-eof] repository distrbuted as a docker image. To be able to compile contracts you will need to have [Docker] installed.
+
+To make sure that everything is working properly you can run the following command:
+```shell
+$ ./eof-solc --version
+```
+
+It will pull the docker image on a first run and should print the version of the solc binary.
+
+After that, make sure that your forge version is up to data (run `foundryup` if needed), and then you should be able to use all usual forge commands —— all contracts will get compiled for EOF.
+
 ## BLS library
 
 Functions to allow calling each of the BLS precompiles defined in [EIP-2537]
@@ -53,98 +66,10 @@ contract Secp256r1Example {
 }
 ```
 
-## EIP-3074 invokers
-
-**NOTE** These invokers temporarily only work with the docker image from
-[foundry-alphanet] which contains patched versions of solc and forge compatible with
-[EIP-3074] instructions. You can pull Foundry Alphanet using `docker pull ghcr.io/paradigmxyz/foundry-alphanet:latest`, see the [README](https://github.com/paradigmxyz/foundry-alphanet/blob/main/README.md) on how to operate it.
-
-### Gas Sponsor Invoker
-
-The GasSponsorInvoker is a smart contract designed to utilize [EIP-3074] auth and
-authcall operations, allowing transactions to be sponsored in terms of gas fees.
-This contract enables an external account (EOA) to authorize the invoker to
-execute specific actions on its behalf without requiring the EOA to provide gas
-for these transactions.
-
-#### Deployment
-1. Setup the environment:
-```shell
-$ make setup
-```
-2. Compile the Contract: you can use the following command:
-```shell
-$ make build
-```
-3. Deploy the contract to AlphaNet:
-```shell
-$ forge create GasSponsorInvoker --private-key <your-private-key> --rpc-url <alphanet-rpc-url>
-```
-Take note of GasSponsorInvoker address.
-
-#### How to use
-
-1. Define target contract
-Imagine a simple contract Greeter that stores `msg.sender` in a variable:
-```solidity
-contract Greeter {
-    address public greeter;
-
-    function setGreeter() public {
-        greeter = msg.sender;
-    }
-}
-```
-2. Authorizing a transaction
-To authorize a transaction, the authorizer signs a digest of the transaction
-details. This process is streamlined by our invoker interface:
-* Create the authorizer account and note its private key and address:
-```shell
-$ cast wallet new
-```
-* Deploy `Greeter` and note its address.
-* Get the `setGreeter` method calldata:
-```shell
-$ cast calldata "setGreeter()"
-```
-* Generate the digest:
-```shell
-$ cast call <GasSponsorInvoker-address> "getDigest(address,bytes)" <Greeter-address> <setGreeter-calldata> --rpc-url <alphanet-rpc-url>
-```
-* Sign the digest
-```shell
-$ cast sign <digest> --private-key <authorizer-private-key>
-```
-This gives the `v`, `r` and `s` values of the signature.
-
-3. Interacting with `GasSponsorInvoker`
-
-Now you can send a transaction to be executed as if by the authorizer account
-with the gas paid by a different account:
-
-* Send the transaction to `GasSponsorInvoker` from an gas sponsor account (
-different from the authorizer and with funds in AlphaNet):
-```shelll
-$ cast send <GasSponsorInvoker-address> \
-    "sponsorCall(address,bytes32,uint8,bytes32,bytes32,address,bytes,uint256,uint256)" \
-    <authorizer-address> \
-    <signature-v> \
-    <signature-r> \
-    <signature-v> \
-    <Greeter-address> \
-    <Greeter-calldata> \
-    0 \
-    0 \
-    --rpc-url <alphanet-rpc-url> \
-    --private-key <sponsor-private-key>
-```
-* Now you can check that the Greeter smart contract register as `msg.sender` the
-authorizer account:
-```shell
-$ cast call <Greeter-address> "greeter()" --rpc-url <alphanet-rpc-url>
-```
-
 [AlphaNet]: https://github.com/paradigmxyz/alphanet
+[EOF]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-3540.md
+[forge-eof]: https://github.com/paradigmxyz/forge-eof
+[Docker]: https://docs.docker.com/
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
 [EIP-7212]: https://eips.ethereum.org/EIPS/eip-7212
 [EIP-3074]: https://eips.ethereum.org/EIPS/eip-3074
