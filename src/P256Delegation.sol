@@ -16,8 +16,8 @@ contract P256Delegation {
         authorizedPublicKeyY = publicKeyY;
     }
 
-    function transact(address to, bytes memory data, bytes32 r, bytes32 s) public {
-        bytes32 digest = keccak256(abi.encode(nonce++, to, data));
+    function transact(address to, bytes memory data, uint256 value, bytes32 r, bytes32 s) public {
+        bytes32 digest = keccak256(abi.encode(nonce++, to, data, value));
         require(Secp256r1.verify(digest, r, s, authorizedPublicKeyX, authorizedPublicKeyY), "Invalid signature");
 
         (bool success,) = to.call(data);

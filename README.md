@@ -80,7 +80,7 @@ $ anvil --alphanet
 ```
 We will be using dev account with address `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` and private key `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`.
 
-2. Generate a private and public key pair:
+2. Generate a P256 private and public key pair:
 ```shell
 $ python examples/p256.py gen
 ```
@@ -93,6 +93,7 @@ $ forge create P256Delegation --private-key "0xac0974bec39a17e36ba4a6b4d238ff944
 ```
 
 4. Configure delegation contract:
+Send EIP-7702 transaction, delegating to our newly deployed contract:
 ```shell
 $ cast send $(cast az) --auth "<address of P256Delegation>" --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
@@ -108,7 +109,24 @@ Let's configure the delegation contract with the public key generated in step 2:
 $ cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'authorize(uint256,uint256)' '<public key X>' '<public key Y>' --private-key
 ```
 
-Note that we are transaction with our EOA account which already includes the updated code.
+Note that we are transacting with our EOA account which already includes the updated code.
+
+5. After that, you should be able to transact on behalf of the EOA account by using the `transact` function of the delegation contract.
+Let's generate a signature for sending 1 ether to zero address by using our P256 private key:
+```shell
+python examples/p256.py sign $(cast abi-encode 'f(uint256,address,bytes,uint256)' $(cast call 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'nonce()(uint256)') '0x0000000000000000000000000000000000000000' '0x' '1000000000000000000')
+```
+
+Note that it uses `cast call` to get internal nonce of our EOA used to protect against replay attacks.
+It also abi-encodes the payload expected by the `P256Delegation` contract, and passes it to our Python script to sign with openssl.
+
+Command output will contain the signature r and s values, which we then should pass to the `transact` function of the delegation contract:
+```shell
+cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'transact(address to,bytes data,uint256 value,bytes32 r,bytes32 s)' '0x0000000000000000000000000000000000000000' '0x' '1000000000000000000' '<r value>' '<s value>' --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+```
+
+Note that we are using a different private key here, this transaction can be sent by anyone as it was authorized by our P256 key.
+
 
 [AlphaNet]: https://github.com/paradigmxyz/alphanet
 [EOF]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-3540.md
