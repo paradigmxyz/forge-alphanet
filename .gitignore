@@ -12,3 +12,7 @@ docs/
 
 # Dotenv file
 .env
+
+# Key files
+private.pem
+public.pem

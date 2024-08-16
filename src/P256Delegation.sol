@@ -7,7 +7,7 @@ contract P256Delegation {
     uint256 authorizedPublicKeyX;
     uint256 authorizedPublicKeyY;
 
-    uint256 nonce;
+    uint256 public nonce;
 
     function authorize(uint256 publicKeyX, uint256 publicKeyY) public {
         require(msg.sender == address(this));
