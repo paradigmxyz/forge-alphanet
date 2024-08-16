@@ -93,23 +93,18 @@ $ forge create P256Delegation --private-key "0xac0974bec39a17e36ba4a6b4d238ff944
 ```
 
 4. Configure delegation contract:
-Send EIP-7702 transaction, delegating to our newly deployed contract:
+Send EIP-7702 transaction, delegating to our newly deployed contract.
+This transaction will both authorize the delegation and set it to use our P256 public key:
 ```shell
-$ cast send $(cast az) --auth "<address of P256Delegation>" --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+$ cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'authorize(uint256,uint256)' '<public key X>' '<public key Y>' --auth "<address of P256Delegation>" --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
+Note that we are transacting with our EOA account which already includes the updated code.
 
 Verify that new code at our EOA account contains the [delegation designation]:
 ```shell
 $ cast code 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 0xef0100...
 ```
-
-Let's configure the delegation contract with the public key generated in step 2:
-```shell
-$ cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'authorize(uint256,uint256)' '<public key X>' '<public key Y>' --private-key
-```
-
-Note that we are transacting with our EOA account which already includes the updated code.
 
 5. After that, you should be able to transact on behalf of the EOA account by using the `transact` function of the delegation contract.
 Let's generate a signature for sending 1 ether to zero address by using our P256 private key:
