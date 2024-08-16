@@ -26,7 +26,7 @@ contract P256Delegation {
         bytes32 digest = keccak256(abi.encode(nonce++, to, data, value));
         require(Secp256r1.verify(digest, r, s, authorizedPublicKeyX, authorizedPublicKeyY), "Invalid signature");
 
-        (bool success,) = to.call(data);
+        (bool success,) = to.call{value: value}(data);
         require(success);
     }
 }

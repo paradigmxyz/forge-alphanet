@@ -76,27 +76,27 @@ To run the commands below, you will need to have [Python] and `openssl` CLI tool
 
 1. Run anvil in Alphanet mode to enable support for EIP-7702 and P256 precompile:
 ```shell
-$ anvil --alphanet
+anvil --alphanet
 ```
 We will be using dev account with address `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` and private key `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`.
 
 2. Generate a P256 private and public key pair:
 ```shell
-$ python examples/p256.py gen
+python examples/p256.py gen
 ```
 
 This command will generate a private and public key pair, save them to `private.pem` and `public.pem` respectively, and print the public key in hex format.
 
 3. Deploy [P256Delegation](src/P256Delegation.sol) contract which we will be delegating to:
 ```shell
-$ forge create P256Delegation --private-key "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" --rpc-url "http://127.0.0.1:8545"
+forge create P256Delegation --private-key "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" --rpc-url "http://127.0.0.1:8545"
 ```
 
 4. Configure delegation contract:
 Send EIP-7702 transaction, delegating to our newly deployed contract.
 This transaction will both authorize the delegation and set it to use our P256 public key:
 ```shell
-$ cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'authorize(uint256,uint256)' '<public key X>' '<public key Y>' --auth "<address of P256Delegation>" --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+cast send 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 'authorize(uint256,uint256)' '<public key X>' '<public key Y>' --auth "<address of P256Delegation>" --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 Note that we are transacting with our EOA account which already includes the updated code.
 
