@@ -18,31 +18,11 @@ After that, make sure that your forge version is up to data (run `foundryup` if 
 
 ## BLS library
 
-Functions to allow calling each of the BLS precompiles defined in [EIP-2537]
+Functions and data structures to allow calling each of the BLS precompiles defined in [EIP-2537]
 without the low level details.
 
-For example, this is how the library can be used from a solidity smart contract:
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+We've prepared a simple test demonstrating BLS signing and verification in [test/BLS.t.sol](test/BLS.t.sol).
 
-import {BLS} from "/path/to/forge-alphanet/src/sign/BLS.sol";
-
-contract BLSExample {
-    event OperationResult(bool success, bytes result);
-
-    // Function to perform a BLS12-381 G1 addition with error handling
-    function performG1Add(bytes memory input) public {
-        (bool success, bytes memory output) = BLS.G1Add(input);
-
-        if (!success) {
-            emit OperationResult(false, "");
-        } else {
-            emit OperationResult(true, output);
-        }
-    }
-}
-```
 ## Secp256r1 library
 
 Provides functionality to call the `P256VERIFY` precompile defined in [EIP-7212]
@@ -59,12 +39,14 @@ contract Secp256r1Example {
     event OperationResult(bool success);
 
     // Function to perform a Secp256r1 signature verification with error handling
-    function performP256Verify(bytes memory input) public {
-        bool result = Secp256r1.verify(input);
+    function performP256Verify(bytes32 digest, bytes32 r, bytes32 s, uint256 publicKeyX, uint256 publicKeyY) public {
+        bool result = Secp256r1.verify(digest, r, s, publicKeyX, publicKeyY);
         emit OperationResult(result);
     }
 }
 ```
+
+See an example of how to test secp256r1 signatures with foundry cheatcodes in [test/P256.t.sol](test/P256.t.sol).
 
 ## Account controlled by a P256 key
 
