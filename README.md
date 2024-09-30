@@ -16,6 +16,33 @@ It will pull the docker image on a first run and should print the version of the
 
 After that, make sure that your forge version is up to data (run `foundryup` if needed), and then you should be able to use all usual forge commands —— all contracts will get compiled for EOF.
 
+## EIP-7702 support
+
+### cast
+
+`cast send` accepts a `--auth` argument which can accept either an address or an encoded authorization which can be obtained through `cast wallet sign-auth`:
+
+```shell
+# sign delegation via delegator-pk and broadcast via sender-pk
+cast send $(cast az) --private-key <sender-pk> --auth $(cast wallet sign-auth <address> --private-key <delegator-pk>)
+```
+
+### forge
+
+To test EIP-7702 features in forge tests, you can use `vm.etch` cheatcode:
+```solidity
+import {Test} from "forge-std/Test.sol";
+import {P256Delegation} from "../src/P256Delegation.sol";
+
+contract DelegationTest is Test {
+    function test() public {
+        P256Delegation delegation = new P256Delegation();
+        // this sets ALICE's EOA code to the deployed contract code
+        vm.etch(ALICE, address(delegation).code);
+    }
+}
+```
+
 ## BLS library
 
 Functions and data structures to allow calling each of the BLS precompiles defined in [EIP-2537]
@@ -117,3 +144,4 @@ Note that we are using a different private key here, this transaction can be sen
 [WebAuthn]: https://webauthn.io/
 [Python]: https://www.python.org/
 [delegation designation]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7702.md#delegation-designation
+[EIP-7702]: https://eips.ethereum.org/EIPS/eip-7702
