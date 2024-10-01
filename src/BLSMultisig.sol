@@ -107,4 +107,6 @@ contract BLSMultisig {
             return false;
         }
     }
+
+    receive() external payable {}
 }

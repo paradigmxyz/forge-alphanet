@@ -7,7 +7,7 @@ sol! {
     #[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
     #[sol(rpc)]
     BLSMultisig,
-    "../../out/BLSMultisig.sol/BLSMultisig.json"
+    "../../../out/BLSMultisig.sol/BLSMultisig.json"
 }
 
 impl From<[u8; 96]> for BLS::G1Point {
