@@ -16,33 +16,40 @@ It will pull the docker image on a first run and should print the version of the
 
 After that, make sure that your forge version is up to data (run `foundryup` if needed), and then you should be able to use all usual forge commands —— all contracts will get compiled for EOF.
 
-## BLS library
+## EIP-7702 support
 
-Functions to allow calling each of the BLS precompiles defined in [EIP-2537]
-without the low level details.
+### cast
 
-For example, this is how the library can be used from a solidity smart contract:
+`cast send` accepts a `--auth` argument which can accept either an address or an encoded authorization which can be obtained through `cast wallet sign-auth`:
+
+```shell
+# sign delegation via delegator-pk and broadcast via sender-pk
+cast send $(cast az) --private-key <sender-pk> --auth $(cast wallet sign-auth <address> --private-key <delegator-pk>)
+```
+
+### forge
+
+To test EIP-7702 features in forge tests, you can use `vm.etch` cheatcode:
 ```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+import {Test} from "forge-std/Test.sol";
+import {P256Delegation} from "../src/P256Delegation.sol";
 
-import {BLS} from "/path/to/forge-alphanet/src/sign/BLS.sol";
-
-contract BLSExample {
-    event OperationResult(bool success, bytes result);
-
-    // Function to perform a BLS12-381 G1 addition with error handling
-    function performG1Add(bytes memory input) public {
-        (bool success, bytes memory output) = BLS.G1Add(input);
-
-        if (!success) {
-            emit OperationResult(false, "");
-        } else {
-            emit OperationResult(true, output);
-        }
+contract DelegationTest is Test {
+    function test() public {
+        P256Delegation delegation = new P256Delegation();
+        // this sets ALICE's EOA code to the deployed contract code
+        vm.etch(ALICE, address(delegation).code);
     }
 }
 ```
+
+## BLS library
+
+Functions and data structures to allow calling each of the BLS precompiles defined in [EIP-2537]
+without the low level details.
+
+We've prepared a simple test demonstrating BLS signing and verification in [test/BLS.t.sol](test/BLS.t.sol).
+
 ## Secp256r1 library
 
 Provides functionality to call the `P256VERIFY` precompile defined in [EIP-7212]
@@ -59,12 +66,14 @@ contract Secp256r1Example {
     event OperationResult(bool success);
 
     // Function to perform a Secp256r1 signature verification with error handling
-    function performP256Verify(bytes memory input) public {
-        bool result = Secp256r1.verify(input);
+    function performP256Verify(bytes32 digest, bytes32 r, bytes32 s, uint256 publicKeyX, uint256 publicKeyY) public {
+        bool result = Secp256r1.verify(digest, r, s, publicKeyX, publicKeyY);
         emit OperationResult(result);
     }
 }
 ```
+
+See an example of how to test secp256r1 signatures with foundry cheatcodes in [test/P256.t.sol](test/P256.t.sol).
 
 ## Account controlled by a P256 key
 
@@ -135,3 +144,4 @@ Note that we are using a different private key here, this transaction can be sen
 [WebAuthn]: https://webauthn.io/
 [Python]: https://www.python.org/
 [delegation designation]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7702.md#delegation-designation
+[EIP-7702]: https://eips.ethereum.org/EIPS/eip-7702
