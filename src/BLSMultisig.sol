@@ -3,12 +3,12 @@ pragma solidity ^0.8.23;
 
 import {BLS} from "./sign/BLS.sol";
 
-/// @notice BLS-powered multisignature wallet, demonstrating the use of 
+/// @notice BLS-powered multisignature wallet, demonstrating the use of
 /// aggregated BLS signatures for verification
-/// @dev This is for demonstration purposes only, do not use in production. This contract does 
+/// @dev This is for demonstration purposes only, do not use in production. This contract does
 /// not include protection from rogue public-key attacks. You
 contract BLSMultisig {
-    /// @notice Public keys of signers. This may contain a pre-aggregated 
+    /// @notice Public keys of signers. This may contain a pre-aggregated
     /// public keys for common sets of signers as well.
     mapping(bytes32 => bool) public signers;
 
@@ -52,7 +52,7 @@ contract BLSMultisig {
 
     /// @notice Maps an operation to a point on G2 which needs to be signed.
     function getOperationPoint(Operation memory op) public view returns (BLS.G2Point memory) {
-        return BLS.MapFp2ToG2(BLS.Fp2(BLS.Fp(0, 0), BLS.Fp(0, uint256(keccak256(abi.encode(op))))));
+        return BLS.hashToCurveG2(abi.encode(op));
     }
 
     /// @notice Accepts an operation signed by a subset of the signers and executes it

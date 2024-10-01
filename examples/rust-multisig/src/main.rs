@@ -1,9 +1,5 @@
 use alloy::{primitives::U256, providers::ProviderBuilder, sol, sol_types::SolValue};
-use blst::{
-    blst_bendian_from_fp, blst_fp, blst_fp2, blst_fp_from_bendian, blst_keygen, blst_p1,
-    blst_p1_affine, blst_p1_to_affine, blst_p2, blst_p2_add_or_double, blst_p2_affine,
-    blst_p2_from_affine, blst_p2_to_affine, blst_scalar, blst_sign_pk_in_g1, blst_sk_to_pk_in_g1,
-};
+use blst::min_pk::{AggregateSignature, SecretKey, Signature};
 use rand::RngCore;
 use BLS::G2Point;
 
@@ -14,86 +10,30 @@ sol! {
     "../../out/BLSMultisig.sol/BLSMultisig.json"
 }
 
-impl From<BLS::Fp> for blst_fp {
-    fn from(value: BLS::Fp) -> Self {
-        let data = value.abi_encode();
+impl From<[u8; 96]> for BLS::G1Point {
+    fn from(value: [u8; 96]) -> Self {
+        let mut data = [0u8; 128];
+        data[16..64].copy_from_slice(&value[0..48]);
+        data[80..128].copy_from_slice(&value[48..96]);
 
-        let mut val = blst_fp::default();
-        unsafe { blst_fp_from_bendian(&mut val, data[16..].as_ptr()) };
-
-        val
+        BLS::G1Point::abi_decode(&data, false).unwrap()
     }
 }
 
-impl From<blst_fp> for BLS::Fp {
-    fn from(value: blst_fp) -> Self {
-        let mut data = [0u8; 48];
-        unsafe { blst_bendian_from_fp(data.as_mut_ptr(), &value) };
+impl From<[u8; 192]> for BLS::G2Point {
+    fn from(value: [u8; 192]) -> Self {
+        let mut data = [0u8; 256];
+        data[16..64].copy_from_slice(&value[48..96]);
+        data[80..128].copy_from_slice(&value[0..48]);
+        data[144..192].copy_from_slice(&value[144..192]);
+        data[208..256].copy_from_slice(&value[96..144]);
 
-        Self {
-            a: U256::from_be_slice(&data[..16]),
-            b: U256::from_be_slice(&data[16..]),
-        }
-    }
-}
-
-impl From<BLS::Fp2> for blst_fp2 {
-    fn from(value: BLS::Fp2) -> Self {
-        Self {
-            fp: [value.c0.into(), value.c1.into()],
-        }
-    }
-}
-
-impl From<blst_fp2> for BLS::Fp2 {
-    fn from(value: blst_fp2) -> Self {
-        Self {
-            c0: value.fp[0].into(),
-            c1: value.fp[1].into(),
-        }
-    }
-}
-
-impl From<BLS::G2Point> for blst_p2 {
-    fn from(value: BLS::G2Point) -> Self {
-        let b_aff = blst_p2_affine {
-            x: value.x.into(),
-            y: value.y.into(),
-        };
-
-        let mut b = blst_p2::default();
-        unsafe { blst_p2_from_affine(&mut b, &b_aff) };
-
-        b
-    }
-}
-
-impl From<blst_p2> for BLS::G2Point {
-    fn from(value: blst_p2) -> Self {
-        let mut affine = blst_p2_affine::default();
-        unsafe { blst_p2_to_affine(&mut affine, &value) };
-
-        BLS::G2Point {
-            x: affine.x.into(),
-            y: affine.y.into(),
-        }
-    }
-}
-
-impl From<blst_p1> for BLS::G1Point {
-    fn from(value: blst_p1) -> Self {
-        let mut affine = blst_p1_affine::default();
-        unsafe { blst_p1_to_affine(&mut affine, &value) };
-
-        BLS::G1Point {
-            x: affine.x.into(),
-            y: affine.y.into(),
-        }
+        BLS::G2Point::abi_decode(&data, false).unwrap()
     }
 }
 
 /// Generates `num` BLS keys and returns them as a tuple of secret keys and public keys, sorted by public key.
-fn generate_keys(num: usize) -> (Vec<blst_scalar>, Vec<BLS::G1Point>) {
+fn generate_keys(num: usize) -> (Vec<SecretKey>, Vec<BLS::G1Point>) {
     let mut rng = rand::thread_rng();
     let mut keys = Vec::with_capacity(num);
 
@@ -101,25 +41,10 @@ fn generate_keys(num: usize) -> (Vec<blst_scalar>, Vec<BLS::G1Point>) {
         let mut ikm = [0u8; 32];
         rng.fill_bytes(&mut ikm);
 
-        let key_info: &[u8] = &[];
+        let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
+        let pk: BLS::G1Point = sk.sk_to_pk().serialize().into();
 
-        // secret key
-        let mut sk = blst_scalar::default();
-        unsafe {
-            blst_keygen(
-                &mut sk,
-                ikm.as_ptr(),
-                ikm.len(),
-                key_info.as_ptr(),
-                key_info.len(),
-            )
-        };
-
-        // public key
-        let mut pk = blst_p1::default();
-        unsafe { blst_sk_to_pk_in_g1(&mut pk, &sk) }
-
-        keys.push((sk, BLS::G1Point::from(pk)));
+        keys.push((sk, pk));
     }
 
     keys.sort_by(|(_, pk1), (_, pk2)| pk1.cmp(pk2));
@@ -128,24 +53,20 @@ fn generate_keys(num: usize) -> (Vec<blst_scalar>, Vec<BLS::G1Point>) {
 }
 
 /// Signs a message with the provided keys and returns the aggregated signature.
-fn sign_message(keys: &[blst_scalar], message: blst_p2) -> G2Point {
-    let mut signatures = Vec::new();
+fn sign_message(keys: &[SecretKey], msg: &[u8]) -> G2Point {
+    let mut sigs = Vec::new();
 
     // create individual signatures
     for key in keys {
-        let mut sig = blst_p2::default();
-        unsafe { blst_sign_pk_in_g1(&mut sig, &message, key) };
-
-        signatures.push(sig);
+        let sig = key.sign(msg, b"BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_", &[]);
+        sigs.push(sig);
     }
 
-    // aggregate signatures by adding them
-    let mut agg_sig = signatures.swap_remove(0);
-    for sig in signatures {
-        unsafe { blst_p2_add_or_double(&mut agg_sig, &agg_sig, &sig) };
-    }
+    let agg_sig = Signature::from_aggregate(
+        &AggregateSignature::aggregate(sigs.iter().collect::<Vec<_>>().as_slice(), false).unwrap(),
+    );
 
-    agg_sig.into()
+    agg_sig.serialize().into()
 }
 
 #[tokio::main]
@@ -160,15 +81,7 @@ pub async fn main() {
 
     let operation = BLSMultisig::Operation::default();
 
-    let point: blst_p2 = multisig
-        .getOperationPoint(operation.clone())
-        .call()
-        .await
-        .unwrap()
-        ._0
-        .into();
-
-    let signature = sign_message(&keys, point);
+    let signature = sign_message(&keys, &operation.abi_encode());
 
     let receipt = multisig
         .verifyAndExecute(BLSMultisig::SignedOperation {
