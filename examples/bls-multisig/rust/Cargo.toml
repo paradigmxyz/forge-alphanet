@@ -1,5 +1,5 @@
 [package]
-name = "rust-multisig"
+name = "alphanet-bls-multisig"
 version = "0.1.0"
 edition = "2021"
 
