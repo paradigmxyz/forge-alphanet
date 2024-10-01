@@ -1,0 +1,15 @@
+[package]
+name = "rust-multisig"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+alloy = { version = "0.4", features = [
+    "providers",
+    "contract",
+    "sol-types",
+    "node-bindings",
+] }
+tokio = { version = "1", features = ["full"] }
+blst = "0.3"
+rand = "0.8"
