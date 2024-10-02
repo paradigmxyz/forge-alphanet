@@ -6,7 +6,7 @@ import {BLS} from "./sign/BLS.sol";
 /// @notice BLS-powered multisignature wallet, demonstrating the use of
 /// aggregated BLS signatures for verification
 /// @dev This is for demonstration purposes only, do not use in production. This contract does
-/// not include protection from rogue public-key attacks. 
+/// not include protection from rogue public-key attacks.
 contract BLSMultisig {
     /// @notice Public keys of signers. This may contain a pre-aggregated
     /// public keys for common sets of signers as well.

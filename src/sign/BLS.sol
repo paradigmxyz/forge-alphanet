@@ -268,7 +268,7 @@ library BLS {
                 0x20,
                 // arg[2] = mod.length
                 0x40,
-                // arg[3] = base.bits @ + 0x60
+                // arg[3] = base.bits
                 // places the first 32 bytes of _b1 and the last 32 bytes of _b2
                 _b1,
                 _b2,
@@ -280,8 +280,8 @@ library BLS {
                 // we add the 0 prefix so that the result will be exactly 64 bytes
                 // saves 300 gas per call instead of sending it along every time
                 // places the first 32 bytes and the last 32 bytes of the field modulus
-                0x000000000000000000000000000000001a0111ea397fe69a4b1ba7b6434bacd7, // arg[5] = mod
-                0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab //
+                0x000000000000000000000000000000001a0111ea397fe69a4b1ba7b6434bacd7,
+                0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab
             )
         );
         require(success, "MODEXP failed");
