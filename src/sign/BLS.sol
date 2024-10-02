@@ -7,7 +7,9 @@ pragma solidity ^0.8.23;
 /// @dev Precompile addresses come from the BLS addresses submodule in AlphaNet, see
 ///      <https://github.com/paradigmxyz/alphanet/blob/main/crates/precompile/src/addresses.rs>
 /// @notice `hashToCurve` logic is based on <https://github.com/ethyla/bls12-381-hash-to-curve/blob/main/src/HashToCurve.sol>
-/// with small modifications.
+/// with small modifications including:
+///     - Removal of low-level assembly in _modexp to ensure compatibility with EOF which does not support low-level staticcall
+///     - Usage of Fp2/G2Point structs defined here for better compatibility with existing methods
 library BLS {
     /// @dev A base field element (Fp) is encoded as 64 bytes by performing the
     /// BigEndian encoding of the corresponding (unsigned) integer. Due to the size of p,
