@@ -3,9 +3,5 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# settings required for EOF
-via_ir = true
-evm_version = "prague"
-eof_version = 1
-solc = "./eof-solc"
+eof = true
 alphanet = true

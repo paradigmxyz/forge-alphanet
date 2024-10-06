@@ -5,16 +5,9 @@ Set of solidity utilities to ease deployment and usage of applications on
 
 ## EOF support
 
-This repository is configured to compile contracts for [EOF]. This is done by using solc binary from [forge-eof] repository distrbuted as a docker image. To be able to compile contracts you will need to have [Docker] installed.
+Forge has built-in support for [EOF]. This is done by using solc binary from [forge-eof] repository distrbuted as a docker image. To be able to compile contracts you will need to have [Docker] installed. Once it's installed, and forge version is up to date (run `foundryup` if needed), you can add `--eof` flag to any forge command to try out EOF compilation.
 
-To make sure that everything is working properly you can run the following command:
-```shell
-$ ./eof-solc --version
-```
-
-It will pull the docker image on a first run and should print the version of the solc binary.
-
-After that, make sure that your forge version is up to data (run `foundryup` if needed), and then you should be able to use all usual forge commands —— all contracts will get compiled for EOF.
+This repository is configured to compile contracts for [EOF] by default by setting `eof = true` in the `foundry.toml` file.
 
 ## EIP-7702 support
 
