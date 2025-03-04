@@ -45,7 +45,7 @@ We've prepared a simple test demonstrating BLS signing and verification in [test
 
 ## Secp256r1 library
 
-Provides functionality to call the `P256VERIFY` precompile defined in [EIP-7212]
+Provides functionality to call the `P256VERIFY` precompile defined in [RIP-7212]
 to verify Secp256r1 signatures.
 
 It can be used in a solidity smart contract like this:
@@ -70,7 +70,7 @@ See an example of how to test secp256r1 signatures with foundry cheatcodes in [t
 
 ## Account controlled by a P256 key
 
-With EIP-7702 and EIP-7212 it is possible to delegate control over an EOA to a P256 key. This has large potential for UX improvement as P256 keys are adopted by commonly used protocols like [Apple Secure Enclave] and [WebAuthn].
+With EIP-7702 and RIP-7212 it is possible to delegate control over an EOA to a P256 key. This has large potential for UX improvement as P256 keys are adopted by commonly used protocols like [Apple Secure Enclave] and [WebAuthn].
 
 We are demonstrating a simple implementation of an account that can be controlled by a P256 key. EOAs can delegate to this contract and configure an authorized P256 key, which can then be used to perform actions on behalf of the EOA.
 
@@ -130,7 +130,7 @@ Note that we are using a different private key here, this transaction can be sen
 [forge-eof]: https://github.com/paradigmxyz/forge-eof
 [Docker]: https://docs.docker.com/
 [EIP-2537]: https://eips.ethereum.org/EIPS/eip-2537
-[EIP-7212]: https://eips.ethereum.org/EIPS/eip-7212
+[RIP-7212]: https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md
 [EIP-3074]: https://eips.ethereum.org/EIPS/eip-3074
 [foundry-alphanet]: https://github.com/paradigmxyz/foundry-alphanet
 [Apple Secure Enclave]: https://support.apple.com/guide/security/secure-enclave-sec59b0b31ff/web
