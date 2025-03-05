@@ -23,7 +23,7 @@ contract P256Delegation {
 
     /// @notice Main entrypoint for authorized transactions. Accepts transaction parameters (to, data, value) and a secp256r1 signature.
     function transact(address to, bytes memory data, uint256 value, bytes32 r, bytes32 s) public {
-        bytes32 digest = keccak256(abi.encode(nonce++, to, data, value));
+        bytes32 digest = keccak256(abi.encode(++nonce, to, data, value));
         require(Secp256r1.verify(digest, r, s, authorizedPublicKeyX, authorizedPublicKeyY), "Invalid signature");
 
         (bool success,) = to.call{value: value}(data);
