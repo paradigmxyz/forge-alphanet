@@ -7,7 +7,7 @@ This example demonstrates an integration of [BlsMultisig](../../../src/BLSMultis
 To run the example, you will need to install the required dependencies:
 
 ```shell
-pip install web3 py_ecc
+pip install web3 py_ecc eth_abi
 ```
 
 Then, you can run the example by executing the following command:
